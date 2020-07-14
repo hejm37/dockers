@@ -1,0 +1,17 @@
+FROM nvidia/cuda:10.2-cudnn7-devel-ubuntu18.04
+
+# install dependencies
+RUN apt-get update && \
+    apt-get install -y wget git libglib2.0-0 libsm6 libxext6 libxrender-dev libturbojpeg && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# install miniconda and torch
+RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh && \
+    bash miniconda.sh -b -p /opt/miniconda3 && \
+    rm miniconda.sh && \
+    ln -s /opt/miniconda3/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
+    echo ". /opt/miniconda3/etc/profile.d/conda.sh" >> ~/.bashrc
+ENV PATH="/opt/miniconda3/bin:${PATH}"
+RUN conda install -y pytorch=1.5.1 torchvision -c pytorch && \
+    conda clean -t -y
